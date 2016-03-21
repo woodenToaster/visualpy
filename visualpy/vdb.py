@@ -1,7 +1,6 @@
 import bdb
 import cmd
 import re
-import sys
 
 from graphics import GraphicsManager
 
@@ -93,28 +92,3 @@ class Vdb(bdb.Bdb, cmd.Cmd):
             stmt_fmt = "exec(compile({}, {}, 'exec'))"
             statement = stmt_fmt.format(repr(fp.read()), repr(self.mainpyfile))
         self.run(statement)
-
-
-USAGE = """
-Pass a python script as an argument to start visual execution.
-
-$ python vdb.py my_script.py
-"""
-
-
-def main():
-    if len(sys.argv) < 2:
-        print(USAGE)
-        sys.exit(0)
-    script = sys.argv[1]
-    print("Tracing execution of " + script)
-    trace_into = Vdb.get_funcs_in_script(script)
-    _vdb = Vdb(trace_into)
-    try:
-        _vdb.runscript(script)
-    except Exception as e:
-        print(e)
-
-if __name__ == '__main__':
-    import vdb
-    vdb.main()

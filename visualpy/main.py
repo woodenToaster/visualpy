@@ -1,20 +1,24 @@
-import kivy
-from kivy.app import App
-from kivy.uix.label import Label
+import sys
 
-kivy.require('1.9.1')
+from graphics import VisualPyApp
+from vdb import Vdb
+
+USAGE = """
+Pass a python script as an argument to start visual execution.
+
+$ python main.py my_script.py
+"""
 
 
-class Frame(Label):
-    pass
-    # def update(self, *args, **kwargs)
-
-
-class VisualPyApp(App):
-
-    def build(self):
-        return Frame(text="x=5")
-
+def main():
+    if len(sys.argv) < 2:
+        print(USAGE)
+        sys.exit(0)
+    script = sys.argv[1]
+    print("Tracing execution of " + script)
+    trace_into = Vdb.get_funcs_in_script(script)
+    _vdb = Vdb(trace_into)
+    VisualPyApp().run(_vdb, script)
 
 if __name__ == '__main__':
-    VisualPyApp().run()
+    main()
