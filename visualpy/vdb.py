@@ -2,8 +2,6 @@ import bdb
 import cmd
 import re
 
-from graphics import GraphicsManager
-
 
 class Vdb(bdb.Bdb, cmd.Cmd):
 
@@ -11,7 +9,7 @@ class Vdb(bdb.Bdb, cmd.Cmd):
         bdb.Bdb.__init__(self, skip=skip)
         cmd.Cmd.__init__(self, completekey, stdin, stdout)
         self.trace_into = trace
-        self.gm = GraphicsManager()
+        self.gm = None
 
     @staticmethod
     def get_funcs_in_script(script):
@@ -45,7 +43,7 @@ class Vdb(bdb.Bdb, cmd.Cmd):
         if event == 'return':
             return self.trace_returns(frame, arg)
         if event == 'exception':
-            return self.dispatch_exception(frame, arg)
+            return self.trace_exceptions(frame, arg)
         if event == 'c_call':
             return self.trace_dispatch
         if event == 'c_exception':
@@ -76,7 +74,10 @@ class Vdb(bdb.Bdb, cmd.Cmd):
         self.gm.pop_frame()
         return self.trace_dispatch
 
-    def runscript(self, script_name):
+    def trace_exceptions(self, frame):
+        print("Exception thrown")
+
+    def runscript(self, script_name, _):
         import __main__
         __main__.__dict__.clear()
         __main__.__dict__.update(
